@@ -11,9 +11,6 @@ import { useState, useEffect } from "react";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
-
-console.log(auth , "AUTHENTICATION")
-
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
@@ -41,7 +38,7 @@ console.log(auth , "AUTHENTICATION")
       <AppBar position="static">
         <Toolbar>
           <Typography edge="start" variant="h6" component="div">
-            Your Todos
+            Google Login
           </Typography>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             {auth.currentUser && auth.currentUser.displayName ? (

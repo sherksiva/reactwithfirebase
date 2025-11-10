@@ -2,28 +2,36 @@ import React from "react";
 import Todo from "./Todo";
 import { useState, useEffect } from "react";
 import { Input, Stack, Button } from "@mui/material";
+import Typography from "@mui/material/Typography";
 import "./todos.css";
-import { auth, db } from "../firebase";
+import { auth, db,  } from "../firebase";
 
 function Todos() {
   const ariaLabel = { "aria-label": "description" };
 
   const [input, setInput] = useState("");
   const [todos, setTodos] = useState([]);
+  const [photourl, setPhotourl] = useState("");
+  const [currentUser, setCurrentUser] = useState ("");
+  const [user, setUser] = useState(null);
+  const imageStyle = {
+	marginTop: '20px'
+       };
 
   useEffect(() => {
+
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        console.log(authUser.displayName, "Marking_Data");
-
+        setUser(authUser);
+	if(auth.currentUser && auth.currentUser.photoURL) {
+	   setCurrentUser(auth.currentUser);
+           setPhotourl(auth.currentUser.photoURL);
+        }
         db.collection(auth.currentUser.uid)
           .orderBy("timestamp", "desc")
           .onSnapshot((snapshot) => {
-		console.log(snapshot , "GETDATA")
             setTodos(
               snapshot.docs.map((doc) => {
-console.log(doc , 
-"Docs")
                 return {
                   id: doc.id,
                   todoText: doc.data().todoText,
@@ -34,13 +42,11 @@ console.log(doc ,
           });
       } else {
         // user logged out
+	setCurrentUser("");
+	setPhotourl("");
       }
     });
-    return () => {
-      // cleanup the listener
-      unsubscribe();
-    };
-  }, []);
+  }, [user]);
 
   const addTodo = (e) => {
     e.preventDefault();
@@ -54,7 +60,6 @@ console.log(doc ,
   const deleteTodo = (id) => {
     try {
       db.collection(auth.currentUser.uid).doc(id).delete();
-      console.log("deleted");
     } catch (e) {
       console.log(e);
     }
@@ -62,8 +67,16 @@ console.log(doc ,
 
   return (
     <div className="todosSection">
-      <form>
+
+{photourl && 
+	<>
+	<img src={photourl} alt="loggedInUser" style={imageStyle} /> 
+	<h4>{currentUser.email}</h4>
+	</>
+}
+     {/* <form>
         <Input
+          name="todoname"
           className="todoInput"
           placeholder="Add a todo"
           inputProps={ariaLabel}
@@ -85,7 +98,7 @@ console.log(doc ,
             todoID={todo.id}
           />
         );
-      })}
+      })} */}
     </div>
   );
 }
