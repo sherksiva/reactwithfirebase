@@ -1,8 +1,7 @@
 import React from "react";
-import Todo from "./Todo";
 import { useState, useEffect } from "react";
 import "./todos.css";
-import { auth, db,  } from "../firebase";
+import { auth } from "../firebase";
 
 function Todos() {
   const [photourl, setPhotourl] = useState("");
@@ -14,7 +13,7 @@ function Todos() {
 
   useEffect(() => {
 
-    const unsubscribe = auth.onAuthStateChanged((authUser) => {
+    auth.onAuthStateChanged((authUser) => {
       if (authUser) {
         setUser(authUser);
 	if(auth.currentUser && auth.currentUser.photoURL) {
